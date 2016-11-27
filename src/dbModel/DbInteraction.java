@@ -10,6 +10,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -97,5 +99,38 @@ public class DbInteraction {
         stmt.setString(4, fromCity);
         stmt.setString(5, toCity);
         stmt.executeUpdate();
+    }
+    
+    public HashMap<Integer, ArrayList<String>> GetAllFlights() throws SQLException
+    {
+        int count = 0;
+        String name = null;
+        String departureTime = null;
+        String arrivalTime = null;
+        String departureDate = null;
+        String arrivalDate = null;
+        String fromCity = null;
+        String toCity = null;
+        HashMap<Integer, ArrayList<String>> result = new HashMap<>();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String sql = "select * from flights";
+        stmt = _conn.prepareStatement(sql);
+        rs = stmt.executeQuery();
+        while(rs.next())
+        {
+            name = rs.getString("name");
+            departureTime = rs.getString("departuretime");
+            arrivalTime = rs.getString("arrivaltime");
+            departureDate = rs.getDate("departuredate").toString();
+            arrivalDate = rs.getDate("arrivaldate").toString();
+            fromCity = rs.getString("fromcity");
+            toCity = rs.getString("tocity");
+            ArrayList<String> rst = new ArrayList<>();
+            rst.add(name); rst.add(departureTime); rst.add(arrivalTime); rst.add(departureDate); rst.add(arrivalDate); rst.add(fromCity); rst.add(toCity); 
+            count++;
+            result.put(count, rst);
+        }
+        return result;
     }
 }

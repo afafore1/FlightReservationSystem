@@ -5,6 +5,14 @@
  */
 package flight.reservation.system;
 
+import dbModel.DbInteraction;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Ayomitunde
@@ -14,10 +22,29 @@ public class Flight extends javax.swing.JFrame {
     /**
      * Creates new form Flight
      */
+    DefaultTableModel _flightModel = new DefaultTableModel(0, 0);
+    final String [] _eventModel = {"Flight Name", "DepartTime", "ArrivalTime", "DepartureDate", "ArrivalDate", "From City", "To City"};
     public Flight() {
         initComponents();
+        _flightModel.setColumnIdentifiers(_eventModel);
+        FillFlightInformation();
     }
 
+    
+    private void FillFlightInformation()
+    {
+        try {
+            DbInteraction db = new DbInteraction();
+            HashMap<Integer, ArrayList<String>> result = db.GetAllFlights();
+            for(Integer s : result.keySet())
+            {
+                ArrayList<String> mapFlights = result.get(s);
+                _flightModel.addRow(new Object[]{mapFlights.get(0),mapFlights.get(1),mapFlights.get(2),mapFlights.get(3),mapFlights.get(4),mapFlights.get(5),mapFlights.get(6)});
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Flight.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -31,7 +58,12 @@ public class Flight extends javax.swing.JFrame {
         txtSearchFlight = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblAllFlights = new javax.swing.JTable(){
+            public boolean isCellEditable(int row, int column){
+                return false;
+            };
+        }
+        ;
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -45,18 +77,8 @@ public class Flight extends javax.swing.JFrame {
 
         jLabel1.setText("Search for Flight");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane1.setViewportView(jTable1);
+        tblAllFlights.setModel(_flightModel);
+        jScrollPane1.setViewportView(tblAllFlights);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -155,7 +177,7 @@ public class Flight extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tblAllFlights;
     private javax.swing.JTextField txtSearchFlight;
     // End of variables declaration//GEN-END:variables
 }
