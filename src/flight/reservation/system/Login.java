@@ -9,6 +9,7 @@ import dbModel.DbInteraction;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -115,13 +116,20 @@ public class Login extends javax.swing.JFrame {
         // TODO add your handling code here:
         String username = txtUsername.getText();
         String password = txtPassword.getText();
-        if(CanLogin(username, password))
+        if(username.isEmpty() || password.isEmpty())
         {
-            System.out.println("Yay!!");
+            JOptionPane.showMessageDialog(null, "Please input a username and password", "Input Required", JOptionPane.ERROR_MESSAGE);
+        }else
+        {
+            if(CanLogin(username, password))
+        {
+            this.setVisible(false);
+            new Flight().setVisible(true);
         }
         else
         {
-            System.out.print("User does not exist!!!");
+            JOptionPane.showMessageDialog(null, "User does not exist!! Please register to continue", "Login Error", JOptionPane.ERROR_MESSAGE);
+        }
         }
     }//GEN-LAST:event_btnLoginActionPerformed
 

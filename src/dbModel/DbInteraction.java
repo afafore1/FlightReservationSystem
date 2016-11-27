@@ -6,6 +6,7 @@
 package dbModel;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -83,4 +84,18 @@ public class DbInteraction {
         stmt.executeUpdate();       
     }
     
+    public void AddFlightInfo(String name, String departureTime, String arrivalTime, Date departureDate, Date arrivalDate, String fromCity, String toCity) throws SQLException
+    {
+        PreparedStatement stmt = null;
+        String sql = "insert into flights (name, departuretime, arrivaltime, fromcity, tocity, departuredate, arrivaldate) values (?,?,?,?,?,?,?)";
+        stmt = _conn.prepareStatement(sql);
+        stmt.setString(1, name);
+        stmt.setString(2, departureTime);
+        stmt.setString(3, arrivalTime);
+        stmt.setDate(6, departureDate);
+        stmt.setDate(7, arrivalDate);
+        stmt.setString(4, fromCity);
+        stmt.setString(5, toCity);
+        stmt.executeUpdate();
+    }
 }
