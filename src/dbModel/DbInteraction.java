@@ -35,7 +35,7 @@ public class DbInteraction {
     {
         PreparedStatement stmt = null;
         ResultSet rst = null;
-        String sql = "select username from user where username= ?";
+        String sql = "select username from users where username= ?";
         stmt = _conn.prepareStatement(sql);
         stmt.setString(1, username);
         rst = stmt.executeQuery();
@@ -52,7 +52,7 @@ public class DbInteraction {
         ResultSet rst = null;
         String user = null;
         String pass = null;
-        String sql = "select username, password from user where username = ? and password = ?";
+        String sql = "select username, password from users where username = ? and password = ?";
         stmt = _conn.prepareStatement(sql);
         stmt.setString(1, username);
         stmt.setString(2, password);
@@ -70,7 +70,7 @@ public class DbInteraction {
             String email, String ssn, String securityQuestion, String answer) throws SQLException
     {
         PreparedStatement stmt = null;
-        String sql = "insert into user (firstname, lastname, address, zipcode, state, username, password, securityquestion, securityanswer, socialsecuritynumber, email) values (?,?,?,?,?,?,?,?,?,?,?)";
+        String sql = "insert into users (firstname, lastname, address, zipcode, state, username, password, securityquestion, securityanswer, socialsecuritynumber, email) values (?,?,?,?,?,?,?,?,?,?,?)";
         stmt = _conn.prepareStatement(sql);
         stmt.setString(1, firstname);
         stmt.setString(2, lastname);
