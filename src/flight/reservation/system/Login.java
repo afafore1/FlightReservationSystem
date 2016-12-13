@@ -121,19 +121,20 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Please input a username and password", "Input Required", JOptionPane.ERROR_MESSAGE);
         }else
         {
-            if(CanLogin(username, password))
-        {
-            this.setVisible(false);
-            new Flight().setVisible(true);
-        }
-        else
-        {
-            JOptionPane.showMessageDialog(null, "User does not exist!! Please register to continue", "Login Error", JOptionPane.ERROR_MESSAGE);
-        }
+            IUser customer = CanLogin(username, password);
+            if(customer != null)
+            {
+                this.setVisible(false);
+                new FlightPanel(customer).setVisible(true);
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "User does not exist!! Please register to continue", "Login Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }//GEN-LAST:event_btnLoginActionPerformed
 
-    private boolean CanLogin(String username, String password)
+    private IUser CanLogin(String username, String password)
     {
         try {
             DbInteraction dbInteraction = new DbInteraction();
@@ -141,7 +142,7 @@ public class Login extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return false;
+        return null;
     }
     private void btnRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegisterActionPerformed
         // TODO add your handling code here:

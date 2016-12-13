@@ -5,6 +5,10 @@
  */
 package dbModel;
 
+import flight.reservation.system.Admin;
+import flight.reservation.system.Flight;
+import flight.reservation.system.IUser;
+import flight.reservation.system.User;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -46,31 +50,49 @@ public class DbInteraction {
         return false;
     }
     
-    public boolean LogUser(String username, String password) throws SQLException
+    public IUser LogUser(String username, String password) throws SQLException
     {
+        IUser customer = null;
         PreparedStatement stmt = null;
         ResultSet rst = null;
         String user = null;
         String pass = null;
-        String sql = "select username, password from users where username = ? and password = ?";
+        String sql = "select id, username, password, firstname, lastname, address, zipcode, state, email, isAdmin from users where username = ? and password = ?";
         stmt = _conn.prepareStatement(sql);
         stmt.setString(1, username);
         stmt.setString(2, password);
         rst = stmt.executeQuery();
         while(rst.next())
         {
+            int id = rst.getInt("id");
             user = rst.getString("username");
             pass = rst.getString("password");
-            if(user != null && pass != null) return true;
+            String firstname = rst.getString("firstname");
+            String lastname = rst.getString("lastname");
+            String address = rst.getString("address");
+            String zip = rst.getString("zipcode");
+            String state = rst.getString("state");
+            String email = rst.getString("email");
+            boolean isAdmin = rst.getBoolean("isAdmin");
+            if(user != null && pass != null)
+            {
+                if(isAdmin)
+                {
+                    customer = new Admin(id, firstname, lastname, address, zip, state, username, password, email);
+                }else
+                {
+                    customer = new User(id, firstname, lastname, address, zip, state, username, password, email);
+                }
+            }
         }
-        return false;
+        return customer;
     }
     
     public void InsertUserData(String firstname, String lastname, String address, String zip, String state, String username, String password,
-            String email, String ssn, String securityQuestion, String answer) throws SQLException
+            String email, String ssn, String securityQuestion, String answer, boolean isAdmin) throws SQLException
     {
         PreparedStatement stmt = null;
-        String sql = "insert into users (firstname, lastname, address, zipcode, state, username, password, securityquestion, securityanswer, socialsecuritynumber, email) values (?,?,?,?,?,?,?,?,?,?,?)";
+        String sql = "insert into users (firstname, lastname, address, zipcode, state, username, password, securityquestion, securityanswer, socialsecuritynumber, email, isAdmin) values (?,?,?,?,?,?,?,?,?,?,?,?)";
         stmt = _conn.prepareStatement(sql);
         stmt.setString(1, firstname);
         stmt.setString(2, lastname);
@@ -83,6 +105,7 @@ public class DbInteraction {
         stmt.setString(9, answer);
         stmt.setString(10, ssn); 
         stmt.setString(11, email); 
+        stmt.setBoolean(12, isAdmin);
         stmt.executeUpdate();       
     }
     
@@ -101,17 +124,16 @@ public class DbInteraction {
         stmt.executeUpdate();
     }
     
-    public HashMap<Integer, ArrayList<String>> GetAllFlights() throws SQLException
+    public ArrayList<Flight> getAllFlights() throws SQLException
     {
-        int count = 0;
         String name = null;
         String departureTime = null;
         String arrivalTime = null;
-        String departureDate = null;
-        String arrivalDate = null;
+        Date departureDate = null;
+        Date arrivalDate = null;
         String fromCity = null;
         String toCity = null;
-        HashMap<Integer, ArrayList<String>> result = new HashMap<>();
+        ArrayList<Flight> result = new ArrayList<>();
         PreparedStatement stmt = null;
         ResultSet rs = null;
         String sql = "select * from flights";
@@ -122,14 +144,46 @@ public class DbInteraction {
             name = rs.getString("name");
             departureTime = rs.getString("departuretime");
             arrivalTime = rs.getString("arrivaltime");
-            departureDate = rs.getDate("departuredate").toString();
-            arrivalDate = rs.getDate("arrivaldate").toString();
+            departureDate = rs.getDate("departuredate");
+            arrivalDate = rs.getDate("arrivaldate");
             fromCity = rs.getString("fromcity");
             toCity = rs.getString("tocity");
-            ArrayList<String> rst = new ArrayList<>();
-            rst.add(name); rst.add(departureTime); rst.add(arrivalTime); rst.add(departureDate); rst.add(arrivalDate); rst.add(fromCity); rst.add(toCity); 
-            count++;
-            result.put(count, rst);
+            Flight flight = new Flight(name, departureTime, arrivalTime, fromCity, toCity, departureDate, arrivalDate);
+            result.add(flight);
+        }
+        return result;
+    }
+    
+    public ArrayList<Flight> getUserFlight(int id) throws SQLException
+    {
+        ArrayList<Flight> result = new ArrayList<>();
+        String name = null;
+        String departureTime = null;
+        String arrivalTime = null;
+        Date departureDate = null;
+        Date arrivalDate = null;
+        String fromCity = null;
+        String toCity = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String sql = "select flights.name, flights.departuretime, flights.arrivaltime, flights.fromcity, flights.tocity, flights.departuredate, flights.arrivaldate from flights\n" +
+                    "join userflight on flights.id = userflight.flightid\n" +
+                    "join users on userflight.userid = users.id\n" +
+                    "where users.id = ?";
+        stmt = _conn.prepareStatement(sql);
+        stmt.setInt(1, id);
+        rs = stmt.executeQuery();
+        while(rs.next())
+        {
+            name = rs.getString("name");
+            departureTime = rs.getString("departuretime");
+            arrivalTime = rs.getString("arrivaltime");
+            departureDate = rs.getDate("departuredate");
+            arrivalDate = rs.getDate("arrivaldate");
+            fromCity = rs.getString("fromcity");
+            toCity = rs.getString("tocity");
+            Flight flight = new Flight(name, departureTime, arrivalTime, fromCity, toCity, departureDate, arrivalDate);
+            result.add(flight);
         }
         return result;
     }

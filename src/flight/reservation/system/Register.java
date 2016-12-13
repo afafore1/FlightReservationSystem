@@ -240,7 +240,8 @@ public class Register extends javax.swing.JFrame {
             String ssn = txtSSN.getText();
             String securityQuestion = txtSecurityQuestion.getText();
             String secAnswer =  txtSecurityAnswer.getText();
-            dbInteraction.InsertUserData(firstname, lastname, address, zip, state, username, password, email, ssn, securityQuestion, secAnswer);
+            boolean isAdmin = false;
+            dbInteraction.InsertUserData(firstname, lastname, address, zip, state, username, password, email, ssn, securityQuestion, secAnswer, isAdmin);
         } catch (SQLException ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }
