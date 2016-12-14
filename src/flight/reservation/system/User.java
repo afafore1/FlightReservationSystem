@@ -65,6 +65,11 @@ public class User implements IUser {
         userFlights.add(flight);
     }
     
+    public void setUserFlights(ArrayList<Flight> flight)
+    {
+        userFlights = flight;
+    }
+    
     @Override
     public boolean canAddNewFlights()
     {

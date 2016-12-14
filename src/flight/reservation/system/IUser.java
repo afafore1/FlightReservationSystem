@@ -32,4 +32,6 @@ public interface IUser {
     boolean canDeleteFlight();
     
     int getId();
+    
+    void setUserFlights(ArrayList<Flight> flight);
 }

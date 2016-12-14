@@ -8,10 +8,10 @@ package flight.reservation.system;
 import dbModel.DbInteraction;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -79,7 +79,7 @@ public class FlightPanel extends javax.swing.JFrame {
         mnuAdmin = new javax.swing.JMenu();
         jMenu3 = new javax.swing.JMenu();
         btnAddFlight = new javax.swing.JMenuItem();
-        jMenuItem4 = new javax.swing.JMenuItem();
+        mnuUpdateFlight = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -164,8 +164,13 @@ public class FlightPanel extends javax.swing.JFrame {
         });
         jMenu3.add(btnAddFlight);
 
-        jMenuItem4.setText("Update Flight");
-        jMenu3.add(jMenuItem4);
+        mnuUpdateFlight.setText("Update Flight");
+        mnuUpdateFlight.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuUpdateFlightActionPerformed(evt);
+            }
+        });
+        jMenu3.add(mnuUpdateFlight);
 
         jMenuItem3.setText("Delete Flight");
         jMenu3.add(jMenuItem3);
@@ -202,10 +207,9 @@ public class FlightPanel extends javax.swing.JFrame {
                 if(!result.contains(f))
                 {
                     result.add(f);
-                    //_customer.addToUserFlight(f); causing concurency error
                 }
             }
-            
+            _customer.setUserFlights(result);
             fillFlight(result);
         }catch (SQLException ex) {
             Logger.getLogger(FlightPanel.class.getName()).log(Level.SEVERE, null, ex);
@@ -251,11 +255,22 @@ public class FlightPanel extends javax.swing.JFrame {
             {
                 if(f.getName().equals(flightName) && f.getDepartureTime().equals(departTime) && f.getArrivalTime().equals(arrivalTime))
                 {
-                    _customer.addToUserFlight(f);
+                    if(!_customer.getUserFlights().contains(f))
+                    {
+                        _customer.addToUserFlight(f);
+                    }else
+                    {
+                        JOptionPane.showMessageDialog(null, "Flight has been booked!! Please search for other flights", "Booking Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             }
         }
     }//GEN-LAST:event_btnBookFlightActionPerformed
+
+    private void mnuUpdateFlightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuUpdateFlightActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_mnuUpdateFlightActionPerformed
 
     private void fillFlight(ArrayList<Flight> result)
     {
@@ -277,10 +292,10 @@ public class FlightPanel extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenu mnuAdmin;
+    private javax.swing.JMenuItem mnuUpdateFlight;
     private javax.swing.JTable tblFlights;
     private javax.swing.JTextField txtSearchFlight;
     // End of variables declaration//GEN-END:variables
